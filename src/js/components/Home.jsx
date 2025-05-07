@@ -1,28 +1,54 @@
-import React from "react";
+import React, { useState } from "react";
+import Task from "./Task";
 
-//include images into your bundle
-import rigoImage from "../../img/rigo-baby.jpg";
-
-//create your first component
 const Home = () => {
-	return (
-		<div className="text-center">
-            
+  const [task, setTask] = useState([]);
+  const [newTask, setNewTask] = useState("");
 
-			<h1 className="text-center mt-5">Hello Rigo!</h1>
-			<p>
-				<img src={rigoImage} />
-			</p>
-			<a href="#" className="btn btn-success">
-				If you see this green button... bootstrap is working...
-			</a>
-			<p>
-				Made by{" "}
-				<a href="http://www.4geeksacademy.com">4Geeks Academy</a>, with
-				love!
-			</p>
-		</div>
-	);
+  const handleInputChange = (e) => {
+    setNewTask(e.target.value);
+    console.log(newTask);
+  };
+
+  const handleAddTask = () => {
+    const newInput = {
+      text: newTask,
+    };
+    setTask([...task, newInput]);
+  };
+
+  return (
+    <div className="container">
+      <div className="row-col-6 mt-5">
+        <div className="">
+          <div className="input-group">
+            <input
+              className="form-control"
+              type="text"
+              aria-label="With input"
+              value={newTask}
+              onChange={handleInputChange}
+            />
+            <button
+              className="btn btn-outline-secondary"
+              type="button"
+              onClick={handleAddTask}
+            >
+              Añadir tarea
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="row-col-6">
+        {task.map((task, index) => (
+          <div className="gx-2" key={index}>
+            <Task task={task.text} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default Home;
