@@ -10,6 +10,7 @@ const Task = (props) => {
         className="btn btn-outline-secondary"
         type="button"
         id="button-addon2"
+        onClick ={() => props.onDelete(props.task)}
       >
         X
       </button>
@@ -19,6 +20,7 @@ const Task = (props) => {
 
 Task.propTypes = {
   task: PropTypes.string,
+  onDelete: PropTypes.func
 };
 
 export default Task;

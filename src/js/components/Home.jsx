@@ -2,19 +2,26 @@ import React, { useState } from "react";
 import Task from "./Task";
 
 const Home = () => {
-  const [task, setTask] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
 
   const handleInputChange = (e) => {
     setNewTask(e.target.value);
-    console.log(newTask);
   };
 
   const handleAddTask = () => {
+    if (newTask.trim() === "") return; // para q no se agreguen tareas vacias
+
     const newInput = {
+      id: crypto.randomUUID(), // Usa un ID único
       text: newTask,
     };
-    setTask([...task, newInput]);
+    setTasks([...tasks, newInput]);
+    setNewTask(""); // Limpiar input para poner una nueva tarea
+  };
+
+  const deleteTask = (idToDelete) => {
+    setTasks(tasks.filter((task) => task.id !== idToDelete));
   };
 
   return (
@@ -28,6 +35,11 @@ const Home = () => {
               aria-label="With input"
               value={newTask}
               onChange={handleInputChange}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleAddTask();
+                }
+              }}
             />
             <button
               className="btn btn-outline-secondary"
@@ -40,10 +52,10 @@ const Home = () => {
         </div>
       </div>
 
-      <div className="row-col-6">
-        {task.map((task, index) => (
+      <div className="row">
+        {tasks.map((task, index) => (
           <div className="gx-2" key={index}>
-            <Task task={task.text} />
+            <Task task={task.text} onDelete={() => deleteTask(task.id)} />
           </div>
         ))}
       </div>
