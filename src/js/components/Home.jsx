@@ -1,9 +1,73 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Task from "./Task";
 
 const Home = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
+  const [theUserExist, setTheUserExist] = useState();
+  const username = "edwin13333";
+
+  const createUser = (newUsername) => {
+    fetch(`https://playground.4geeks.com/todo/users/${newUsername}`, {
+      method: "POST",
+      body: JSON.stringify([]),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((resp) => {
+        console.log(resp.ok); // Será true si la respuesta es exitosa
+        console.log("Usuario creado con éxito");
+        setTheUserExist(true);
+        console.log(resp.status); // El código de estado 201, 300, 400, etc.
+        return resp.json(); // Intentará parsear el resultado a JSON y retornará una promesa donde puedes usar .then para seguir con la lógica
+      })
+      .then((data) => {
+        // Aquí es donde debe comenzar tu código después de que finalice la búsqueda
+        console.log(data); // Esto imprimirá en la consola el objeto exacto recibido del servidor
+      })
+      .catch((error) => {
+        // Manejo de errores
+        console.log(error);
+      });
+  };
+
+  useEffect(() => {
+    fetch(`https://playground.4geeks.com/todo/users/${username}`).then(
+      (resp) => {
+        if (resp.ok) {
+          console.log("Usuario existe");
+          setTheUserExist(true);
+        } else {
+          console.log("Usuario NO existe");
+          createUser(username);
+        }
+        console.log(resp.data);
+      }
+    );
+  }, []);
+
+  useEffect(() => {
+    console.log("Existe el usuario actualizando? " + theUserExist);
+  });
+
+  function postTask(newTask) {
+    console.log(newTask);
+    let filterTasks = { label: newTask.text, is_done: false };
+    console.log(filterTasks);
+
+    fetch(`https://playground.4geeks.com/todo/todos/${username}`, {
+      method: "POST",
+      body: JSON.stringify(filterTasks),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then ((resp) => {
+      if (resp.ok) {
+        console.log("Tarea agregada al servidor");
+      }
+    });
+  }
 
   const handleInputChange = (e) => {
     setNewTask(e.target.value);
@@ -12,12 +76,17 @@ const Home = () => {
   const handleAddTask = () => {
     if (newTask.trim() === "") return; // para q no se agreguen tareas vacias
 
-    const newInput = {
-      id: crypto.randomUUID(), // Usa un ID único
-      text: newTask,
-    };
-    setTasks([...tasks, newInput]);
-    setNewTask(""); // Limpiar input para poner una nueva tarea
+    if (theUserExist) {
+      const newInput = {
+        id: crypto.randomUUID(), // Usa un ID único
+        text: newTask,
+      };
+      setTasks([...tasks, newInput]);
+      setNewTask(""); // Limpiar input para poner una nueva tarea
+      postTask(newInput);
+    } else {
+      alert("No se puede agregar tarea, usuario no existe");
+    }
   };
 
   const deleteTask = (idToDelete) => {
