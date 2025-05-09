@@ -4,7 +4,7 @@ import Task from "./Task";
 const Home = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
-  const [theUserExist, setTheUserExist] = useState();
+  const [theUserExist, setTheUserExist] = useState(false);
   const [username, setUsername] = useState("");
 
   const createUser = (newUsername) => {
@@ -16,21 +16,16 @@ const Home = () => {
       },
     })
       .then((resp) => {
-        console.log(resp.ok); // Será true si la respuesta es exitosa
         console.log("Usuario creado con éxito");
         setTheUserExist(true);
-        console.log(resp.status); // El código de estado 201, 300, 400, etc.
         return resp.json(); // Intentará parsear el resultado a JSON y retornará una promesa donde puedes usar .then para seguir con la lógica
       })
-      .then((data) => {
-        // Aquí es donde debe comenzar tu código después de que finalice la búsqueda
-        console.log(data); // Esto imprimirá en la consola el objeto exacto recibido del servidor        
+      .then((data) => {       
         alert(
-          "Se ha creado un nuevo usuario: " + newUsername
+          "Se ha creado un nuevo usuario: " + data.name
         );
       })
       .catch((error) => {
-        // Manejo de errores
         console.log(error);
       });
   };
