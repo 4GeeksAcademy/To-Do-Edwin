@@ -33,23 +33,31 @@ const Home = () => {
   };
 
   useEffect(() => {
-    fetch(`https://playground.4geeks.com/todo/users/${username}`).then(
-      (resp) => {
+    fetch(`https://playground.4geeks.com/todo/users/${username}`)
+      .then((resp) => {
         if (resp.ok) {
           console.log("Usuario existe");
           setTheUserExist(true);
+          return resp.json();
         } else {
           console.log("Usuario NO existe");
           createUser(username);
         }
         console.log(resp.data);
-      }
-    );
+      })
+      .then((data) => {
+        if (data.todos) {
+          const formattedTodos = data.todos.map((todo) => ({
+            id: todo.id,
+            text: todo.label,
+          }));
+          setTasks(formattedTodos);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }, []);
-
-  useEffect(() => {
-    console.log("Existe el usuario actualizando? " + theUserExist);
-  });
 
   function postTask(newTask) {
     console.log(newTask);
@@ -62,7 +70,7 @@ const Home = () => {
       headers: {
         "Content-Type": "application/json",
       },
-    }).then ((resp) => {
+    }).then((resp) => {
       if (resp.ok) {
         console.log("Tarea agregada al servidor");
       }
@@ -78,7 +86,6 @@ const Home = () => {
 
     if (theUserExist) {
       const newInput = {
-        id: crypto.randomUUID(), // Usa un ID único
         text: newTask,
       };
       setTasks([...tasks, newInput]);
@@ -91,6 +98,25 @@ const Home = () => {
 
   const deleteTask = (idToDelete) => {
     setTasks(tasks.filter((task) => task.id !== idToDelete));
+    fetch(
+      `https://playground.4geeks.com/todo/todos/${idToDelete}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((resp) => {
+        if (resp.ok) {
+          console.log(`Tarea con ID ${idToDelete} eliminada del servidor`);
+        } else {
+          console.error("Error al eliminar la tarea del servidor");
+        }
+      })
+      .catch((error) => {
+        console.error("Error en la solicitud DELETE:", error);
+      });
   };
 
   return (
