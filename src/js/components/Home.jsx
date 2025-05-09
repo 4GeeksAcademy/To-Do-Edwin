@@ -5,7 +5,7 @@ const Home = () => {
   const [tasks, setTasks] = useState([]);
   const [newTask, setNewTask] = useState("");
   const [theUserExist, setTheUserExist] = useState();
-  const username = "edwin13333";
+  const [username, setUsername] = useState("");
 
   const createUser = (newUsername) => {
     fetch(`https://playground.4geeks.com/todo/users/${newUsername}`, {
@@ -24,7 +24,10 @@ const Home = () => {
       })
       .then((data) => {
         // Aquí es donde debe comenzar tu código después de que finalice la búsqueda
-        console.log(data); // Esto imprimirá en la consola el objeto exacto recibido del servidor
+        console.log(data); // Esto imprimirá en la consola el objeto exacto recibido del servidor        
+        alert(
+          "Se ha creado un nuevo usuario: " + newUsername
+        );
       })
       .catch((error) => {
         // Manejo de errores
@@ -52,16 +55,15 @@ const Home = () => {
             text: todo.label,
           }));
           setTasks(formattedTodos);
+          alert(
+            "Usuario registrado, cantidad de tareas: " + formattedTodos.length
+          );
         }
       })
       .catch((error) => {
         console.log(error);
       });
   }
-
-  useEffect(() => {
-    verifyAndDownloadUserData();
-  }, []);
 
   function postTask(newTask) {
     let filterTasks = { label: newTask.text, is_done: false };
@@ -82,6 +84,10 @@ const Home = () => {
 
   const handleInputChange = (e) => {
     setNewTask(e.target.value);
+  };
+
+  const handleInputUsername = (e) => {
+    setUsername(e.target.value);
   };
 
   const handleAddTask = () => {
@@ -121,6 +127,29 @@ const Home = () => {
 
   return (
     <div className="container">
+      <div className="row-col-6 mt-5">
+        <div className="input-group">
+          <input
+            className="form-control"
+            type="text"
+            aria-label="With input"
+            value={username}
+            onChange={handleInputUsername}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                verifyAndDownloadUserData();
+              }
+            }}
+          />
+          <button
+            className="btn btn-outline-secondary"
+            type="button"
+            onClick={verifyAndDownloadUserData}
+          >
+            Ingresar usuario
+          </button>
+        </div>
+      </div>
       <div className="row-col-6 mt-5">
         <div className="">
           <div className="input-group">
