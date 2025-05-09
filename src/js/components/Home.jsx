@@ -32,7 +32,7 @@ const Home = () => {
       });
   };
 
-  useEffect(() => {
+  function verifyAndDownloadUserData() {
     fetch(`https://playground.4geeks.com/todo/users/${username}`)
       .then((resp) => {
         if (resp.ok) {
@@ -57,12 +57,14 @@ const Home = () => {
       .catch((error) => {
         console.log(error);
       });
+  }
+
+  useEffect(() => {
+    verifyAndDownloadUserData();
   }, []);
 
   function postTask(newTask) {
-    console.log(newTask);
     let filterTasks = { label: newTask.text, is_done: false };
-    console.log(filterTasks);
 
     fetch(`https://playground.4geeks.com/todo/todos/${username}`, {
       method: "POST",
@@ -74,6 +76,7 @@ const Home = () => {
       if (resp.ok) {
         console.log("Tarea agregada al servidor");
       }
+      verifyAndDownloadUserData();
     });
   }
 
@@ -98,15 +101,12 @@ const Home = () => {
 
   const deleteTask = (idToDelete) => {
     setTasks(tasks.filter((task) => task.id !== idToDelete));
-    fetch(
-      `https://playground.4geeks.com/todo/todos/${idToDelete}`,
-      {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
+    fetch(`https://playground.4geeks.com/todo/todos/${idToDelete}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
       .then((resp) => {
         if (resp.ok) {
           console.log(`Tarea con ID ${idToDelete} eliminada del servidor`);
