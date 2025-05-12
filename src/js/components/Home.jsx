@@ -47,9 +47,6 @@ const Home = () => {
             text: todo.label,
           }));
           setTasks(formattedTodos);
-          alert(
-            "Usuario registrado, cantidad de tareas: " + formattedTodos.length
-          );
         }
       } else {
         console.log("Usuario NO existe");
