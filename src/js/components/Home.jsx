@@ -7,27 +7,28 @@ const Home = () => {
   const [theUserExist, setTheUserExist] = useState(false);
   const [username, setUsername] = useState("");
 
-  const createUser = (newUsername) => {
-    fetch(`https://playground.4geeks.com/todo/users/${newUsername}`, {
-      method: "POST",
-      body: JSON.stringify([]),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((resp) => {
-        console.log("Usuario creado con éxito");
-        setTheUserExist(true);
-        return resp.json(); // Intentará parsear el resultado a JSON y retornará una promesa donde puedes usar .then para seguir con la lógica
-      })
-      .then((data) => {       
-        alert(
-          "Se ha creado un nuevo usuario: " + data.name
-        );
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+  const createUser = async (newUsername) => {
+    try {
+      const resp = await fetch(
+      `https://playground.4geeks.com/todo/users/${newUsername}`,
+      {
+        method: "POST",
+        body: JSON.stringify([]),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (resp.ok) {
+      console.log("Usuario creado con éxito");
+      setTheUserExist(true);
+      alert("Se ha creado un nuevo usuario: " + data.name);
+    }
+    return resp.json();
+    } catch (error) {
+      console.log(erorr)
+    }
+    
   };
 
   function verifyAndDownloadUserData() {
