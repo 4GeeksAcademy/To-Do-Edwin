@@ -1,16 +1,14 @@
-import React from "react";
 import "../../styles/task.css";
 import PropTypes from "prop-types";
 
-const Task = (props) => {
+const Task = ({task, onDelete}) => {
   return (
     <div className="input-group my-3">
-      <span className="input-group-text">{props.task}</span>
+      <span className="input-group-text">{task}</span>
       <button
         className="btn btn-outline-secondary"
         type="button"
-        id="button-addon2"
-        onClick ={() => props.onDelete(props.task)}
+        onClick ={() => onDelete()}
       >
         X
       </button>
