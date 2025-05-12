@@ -10,41 +10,37 @@ const Home = () => {
   const createUser = async (newUsername) => {
     try {
       const resp = await fetch(
-      `https://playground.4geeks.com/todo/users/${newUsername}`,
-      {
-        method: "POST",
-        body: JSON.stringify([]),
-        headers: {
-          "Content-Type": "application/json",
-        },
+        `https://playground.4geeks.com/todo/users/${newUsername}`,
+        {
+          method: "POST",
+          body: JSON.stringify([]),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(resp);
+      if (resp.ok) {
+        console.log("Usuario creado con éxito");
+        setTheUserExist(true);
+        alert("Se ha creado un nuevo usuario: " + newUsername);
       }
-    );
-    if (resp.ok) {
-      console.log("Usuario creado con éxito");
-      setTheUserExist(true);
-      alert("Se ha creado un nuevo usuario: " + data.name);
-    }
-    return resp.json();
+      return resp.json();
     } catch (error) {
-      console.log(erorr)
+      console.log(error);
     }
-    
   };
 
-  function verifyAndDownloadUserData() {
-    fetch(`https://playground.4geeks.com/todo/users/${username}`)
-      .then((resp) => {
-        if (resp.ok) {
-          console.log("Usuario existe");
-          setTheUserExist(true);
-          return resp.json();
-        } else {
-          console.log("Usuario NO existe");
-          createUser(username);
-        }
-        console.log(resp.data);
-      })
-      .then((data) => {
+  async function verifyAndDownloadUserData() {
+    try {
+      const resp = await fetch(
+        `https://playground.4geeks.com/todo/users/${username}`
+      );
+
+      if (resp.ok) {
+        console.log("Usuario existe");
+        setTheUserExist(true);
+        const data = await resp.json();
         if (data.todos) {
           const formattedTodos = data.todos.map((todo) => ({
             id: todo.id,
@@ -55,27 +51,38 @@ const Home = () => {
             "Usuario registrado, cantidad de tareas: " + formattedTodos.length
           );
         }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      } else {
+        console.log("Usuario NO existe");
+        await createUser(username);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  function postTask(newTask) {
-    let filterTasks = { label: newTask.text, is_done: false };
+  async function postTask(newTask) {
+    try {
+      let filterTasks = { label: newTask.text, is_done: false };
 
-    fetch(`https://playground.4geeks.com/todo/todos/${username}`, {
-      method: "POST",
-      body: JSON.stringify(filterTasks),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((resp) => {
+      const resp = await fetch(
+        `https://playground.4geeks.com/todo/todos/${username}`,
+        {
+          method: "POST",
+          body: JSON.stringify(filterTasks),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       if (resp.ok) {
         console.log("Tarea agregada al servidor");
       }
       verifyAndDownloadUserData();
-    });
+      
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const handleInputChange = (e) => {
