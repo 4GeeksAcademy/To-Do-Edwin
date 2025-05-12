@@ -6,6 +6,7 @@ const Home = () => {
   const [newTask, setNewTask] = useState("");
   const [theUserExist, setTheUserExist] = useState(false);
   const [username, setUsername] = useState("");
+  let initialValue = "";
 
   const createUser = async (newUsername) => {
     try {
@@ -19,7 +20,6 @@ const Home = () => {
           },
         }
       );
-      console.log(resp);
       if (resp.ok) {
         console.log("Usuario creado con éxito");
         setTheUserExist(true);
@@ -31,10 +31,10 @@ const Home = () => {
     }
   };
 
-  async function verifyAndDownloadUserData() {
+  async function verifyAndDownloadUserData(user) {
     try {
       const resp = await fetch(
-        `https://playground.4geeks.com/todo/users/${username}`
+        `https://playground.4geeks.com/todo/users/${user}`
       );
 
       if (resp.ok) {
@@ -53,7 +53,7 @@ const Home = () => {
         }
       } else {
         console.log("Usuario NO existe");
-        await createUser(username);
+        await createUser(user);
       }
     } catch (error) {
       console.log(error);
@@ -77,8 +77,8 @@ const Home = () => {
 
       if (resp.ok) {
         console.log("Tarea agregada al servidor");
+        verifyAndDownloadUserData(username);
       }
-      verifyAndDownloadUserData();
     } catch (error) {
       console.log(error);
     }
@@ -129,6 +129,15 @@ const Home = () => {
     }
   };
 
+  useEffect(() => {
+    const saved = localStorage.getItem("username");
+    if (saved !== "") {      
+      initialValue = JSON.parse(saved);
+      setUsername(initialValue);
+      verifyAndDownloadUserData(initialValue);
+    }
+  }, []);
+
   return (
     <div className="container">
       <div className="row-col-6 mt-5">
@@ -141,14 +150,18 @@ const Home = () => {
             onChange={handleInputUsername}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                verifyAndDownloadUserData();
+                localStorage.setItem("username", JSON.stringify(username)),              
+                verifyAndDownloadUserData(username)   
               }
             }}
           />
           <button
             className="btn btn-outline-secondary"
             type="button"
-            onClick={verifyAndDownloadUserData}
+            onClick={()=> (               
+                localStorage.setItem("username", JSON.stringify(username)),              
+                verifyAndDownloadUserData(username)           
+            )}
           >
             Ingresar usuario
           </button>
