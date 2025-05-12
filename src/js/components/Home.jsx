@@ -79,7 +79,6 @@ const Home = () => {
         console.log("Tarea agregada al servidor");
       }
       verifyAndDownloadUserData();
-      
     } catch (error) {
       console.log(error);
     }
@@ -108,24 +107,26 @@ const Home = () => {
     }
   };
 
-  const deleteTask = (idToDelete) => {
-    setTasks(tasks.filter((task) => task.id !== idToDelete));
-    fetch(`https://playground.4geeks.com/todo/todos/${idToDelete}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((resp) => {
-        if (resp.ok) {
-          console.log(`Tarea con ID ${idToDelete} eliminada del servidor`);
-        } else {
-          console.error("Error al eliminar la tarea del servidor");
+  const deleteTask = async (idToDelete) => {
+    try {
+      setTasks(tasks.filter((task) => task.id !== idToDelete));
+      const resp = await fetch(
+        `https://playground.4geeks.com/todo/todos/${idToDelete}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      })
-      .catch((error) => {
-        console.error("Error en la solicitud DELETE:", error);
-      });
+      );
+      if (resp.ok) {
+        console.log(`Tarea con ID ${idToDelete} eliminada del servidor`);
+      } else {
+        console.error("Error al eliminar la tarea del servidor");
+      }
+    } catch (error) {
+      console.error("Error en la solicitud DELETE:", error);
+    }
   };
 
   return (
